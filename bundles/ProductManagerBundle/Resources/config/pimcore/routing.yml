@@ -1,0 +1,3 @@
+product_manager_homepage:
+    path:     /product_manager
+    defaults: { _controller: ProductManagerBundle\Controller\DefaultController::indexAction }
