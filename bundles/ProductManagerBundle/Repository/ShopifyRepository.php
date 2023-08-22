@@ -36,15 +36,11 @@ class ShopifyRepository
      *
      * @param LoggerInterface $logger The logger for recording log messages.
      * @param Client $client The HTTP client for making API requests.
-     * @param string $shopifyApiBaseUri The Shopify API base URI.
-     * @param string $shopifyApiToken The Shopify API access token.
      */
-    public function __construct(LoggerInterface $logger, Client $client, string $shopifyApiBaseUri, string $shopifyApiToken)
+    public function __construct(LoggerInterface $logger, Client $client)
     {
         $this->logger = $logger;
         $this->client = $client;
-        $this->shopifyApiBaseUri = $shopifyApiBaseUri;
-        $this->shopifyApiToken = $shopifyApiToken;
     }
 
     /**
@@ -79,10 +75,11 @@ class ShopifyRepository
     private function getAllProducts(): ?string
     {
         try {
+            $shopifyToken = $_ENV['SHOPIFY_TOKEN'];
             $response = $this->client->get($this->shopifyApiBaseUri . 'products.json', [
                 'headers' => [
                     'Accept'                 => 'application/json',
-                    'X-Shopify-Access-Token' => $this->shopifyApiToken,
+                    'X-Shopify-Access-Token' => $shopifyToken,
                 ],
             ]);
 
