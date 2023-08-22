@@ -9,7 +9,7 @@ class ProductManagerBundle extends AbstractPimcoreBundle
     public function getJsPaths()
     {
         return [
-            '/bundles/productmanager/js/pimcore/startup.js'
+            'bundles/ProductManagerBundle/public/js/pimcore/startup.js'
         ];
     }
 }

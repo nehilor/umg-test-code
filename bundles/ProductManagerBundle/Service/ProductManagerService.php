@@ -8,9 +8,9 @@ use Pimcore\Model\DataObject\Product;
 use Psr\Log\LoggerInterface;
 
 /**
- * The ProductService class handles the interaction with Shopify's API for managing products.
+ * The ProductManagerService class handles the interaction with Shopify's API for managing products.
  */
-class ProductService
+class ProductManagerService
 {
     /**
      * @var LoggerInterface The logger for recording log messages.
@@ -23,7 +23,7 @@ class ProductService
     private ClientInterface $httpClient;
 
     /**
-     * ProductService constructor.
+     * ProductManagerService constructor.
      *
      * @param LoggerInterface $logger The logger for recording log messages.
      * @param ClientInterface $httpClient The HTTP client for making API requests.
@@ -66,7 +66,7 @@ class ProductService
             return;
         }
 
-        $this->logger->info('ProductService: Product saved successfully.');
+        $this->logger->info('ProductManagerService: Product saved successfully.');
     }
 
     /**
@@ -100,9 +100,12 @@ class ProductService
      */
     private function buildApiEndpoint(string $shopifyUri, ?int $existingProductId): string
     {
-        $url = $existingProductId ? "products/{$existingProductId}.json" : 'products.json';
-        return $shopifyUri . $url;
+        if ($existingProductId) {
+            return $shopifyUri . "products/{$existingProductId}.json";
+        }
+        return $shopifyUri . 'products.json';
     }
+
 
     /**
      * Handles API errors and logs details.
@@ -113,7 +116,7 @@ class ProductService
     {
         $statusCode = $response->getStatusCode();
         $reasonPhrase = $response->getReasonPhrase();
-        $this->logger->error("ProductService: API Error ({$statusCode}) {$reasonPhrase}");
+        $this->logger->error("ProductManagerService: API Error ({$statusCode}) {$reasonPhrase}");
     }
 
     /**
@@ -125,6 +128,6 @@ class ProductService
     {
         $statusCode = $exception->getCode();
         $errorMessage = $exception->getMessage();
-        $this->logger->error("ProductService Exception ({$statusCode}) {$errorMessage}");
+        $this->logger->error("ProductManagerService Exception ({$statusCode}) {$errorMessage}");
     }
 }

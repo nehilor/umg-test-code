@@ -10,9 +10,9 @@ use ProductManagerBundle\Repository\ShopifyRepository;
 use ProductManagerBundle\Service\ProductManagerService;
 
 /**
- * The ProductUpdateListener class listens for DataObject events and exports products to Shopify when updated.
+ * The ProductManagerListener class listens for DataObject events and exports products to Shopify when updated.
  */
-class ProductUpdateListener
+class ProductManagerListener
 {
     /**
      * @var LoggerInterface $logger The logger for recording log messages.
@@ -30,7 +30,7 @@ class ProductUpdateListener
     private ProductManagerService $productManagerService;
 
     /**
-     * ProductUpdateListener constructor.
+     * ProductManagerListener constructor.
      *
      * @param LoggerInterface $logger The logger for recording log messages.
      * @param ShopifyRepository $productRepository The repository for interacting with Shopify.
@@ -51,12 +51,12 @@ class ProductUpdateListener
      *
      * @param ElementEventInterface $event The event element.
      */
-    public function onObjectPostUpdate(ElementEventInterface $event): void
+    public function onProductManagerUpdate(ElementEventInterface $event): void
     {
-        $this->logger->info('ProductUpdateListener: Product Export Process Started.');
+        $this->logger->info('ProductManagerListener: Product Export Process Started.');
 
         if (!($event instanceof DataObjectEvent)) {
-            $this->logger->error('ProductUpdateListener: This listener can only be bound to DataObjectEvents. Please check your service configuration.');
+            $this->logger->error('ProductManagerListener: This listener can only be bound to DataObjectEvents. Please check your service configuration.');
             return;
         }
 
@@ -66,15 +66,17 @@ class ProductUpdateListener
             $isPublished = $product->isPublished();
 
             if (!$isPublished) {
-                $this->logger->info('ProductUpdateListener: The product is not published. Skipping export.');
+                $this->logger->info('ProductManagerListener: The product is not published. Skipping export.');
                 return;
             }
 
             $shopifyProductId = $this->productRepository->getIdForSku($product->getSku());
 
-            $this->productManagerService->save($product, $shopifyProductId);
+            $this->logger->info('ProductManagerListener: Product has sku:' . $shopifyProductId);
 
-            $this->logger->info('ProductUpdateListener: Product export completed successfully.');
+            $this->productManagerService->saveProduct($product, $shopifyProductId);
+
+            $this->logger->info('ProductManagerListener: Product export completed successfully.');
         }
     }
 }

@@ -11,10 +11,20 @@ services:
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
+
     ProductManagerBundle\Controller\:
         resource: '../../Controller'
         public: true
         tags: ['controller.service_arguments']
+
+    ProductManagerBundle\Service\:
+        resource: '../../Service'
+        public: true
+
+    ProductManagerBundle\Repository\:
+        resource: '../../Repository'
+        public: true
+
 
 # add more services, or override services that need manual wiring
 #    ProductManagerBundle\ExampleClass:

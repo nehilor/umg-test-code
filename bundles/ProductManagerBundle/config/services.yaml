@@ -12,14 +12,14 @@ services:
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
     ProductManagerBundle\Controller\:
-        resource: '../bundles/src/Controller'
+        resource: '../Controller'
         public: true
         tags: ['controller.service_arguments']
 
     ProductManagerBundle\Service\:
-        resource: '../src/Service'
+        resource: '../Services'
         public: true
 
     ProductManagerBundle\Repository\:
-        resource: '../src/Repository'
+        resource: '../Repository'
         public: true

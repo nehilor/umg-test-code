@@ -22,16 +22,6 @@ class ShopifyRepository
     private Client $client;
 
     /**
-     * @var string The Shopify API base URI.
-     */
-    private string $shopifyApiBaseUri;
-
-    /**
-     * @var string The Shopify API access token.
-     */
-    private string $shopifyApiToken;
-
-    /**
      * ShopifyRepository constructor.
      *
      * @param LoggerInterface $logger The logger for recording log messages.
@@ -54,18 +44,23 @@ class ShopifyRepository
     {
         $products = json_decode($this->getAllProducts());
 
-        $matches = [];
-        foreach ($products as $product) {
+        if (!is_array($products->products)) {
+            return null;
+        }
+
+        foreach ($products->products as $product) {
             foreach ($product->variants as $variant) {
                 if ($sku === $variant->sku) {
-                    $this->logger->info('ShopifyRepository: Found a matching SKU in Shopify => ' . $variant->id);
-                    $matches[] = $variant->id;
+                    $this->logger->info('ShopifyRepository: Found a matching SKU in Shopify => ' . $product->id);
+                    return $product->id;
                 }
             }
         }
 
-        return $matches[0] ?? null;
+        return null;
     }
+
+
 
     /**
      * Retrieves all products from the Shopify API.
@@ -75,8 +70,9 @@ class ShopifyRepository
     private function getAllProducts(): ?string
     {
         try {
+            $shopifyUri = $_ENV['SHOPIFY_URI'];
             $shopifyToken = $_ENV['SHOPIFY_TOKEN'];
-            $response = $this->client->get($this->shopifyApiBaseUri . 'products.json', [
+            $response = $this->client->get($shopifyUri . 'products.json', [
                 'headers' => [
                     'Accept'                 => 'application/json',
                     'X-Shopify-Access-Token' => $shopifyToken,
